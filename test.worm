@@ -1,0 +1,127 @@
+~~ worm
+
+~~ GOALS:
+~~    Data Oriented
+~~    Manual Memory Management
+
+~~ meanings:
+~~ |~NAME    create a state called NAME
+~~ |-NAME    create a folder called NAME
+~~ :<        replace left type item at location (right)
+~~ <:        recieves
+~~ >:        sends
+~~ :=        make left a reference of the expression right
+~~ ->        move folder/state (takes subfolders and states if its a folder) to location
+~~ -><       copy folder/state (takes subfolders and states if its a folder) to location
+~~ !->       move folder (does not take subfolders, but it takes states) to location
+~~ !-><      copy folder (does not take subfolders, but it takes states) to location
+~~ <=        set the return value of left (state) to right (expression)
+~~ @         reference a state in a location
+~~ @?        try to reference a state in a location, if it succeeds it returns true, otherwise false
+~~ &         returns the value of right as a name (for folder creation / indexing)
+~~ ^         push state to location or state
+~~ ;         pop state from location or state
+
+~~ $         parameter
+~~ {}        function body
+
+~~ @>        location
+~~ .         current
+~~ ~         root
+~~ _         null (moving to this clears it, reading from it returns a random value (consistent through program runs))
+
+~~ +         add op
+~~ -         subtract op
+~~ *         multiply op
+~~ /         divide op
+~~ %         modulus op
+~~ %%        remainder op
+~~ >>        bitshift right op
+~~ <<        bitshift left op
+~~ &         bitwise and op
+~~ |         bitwise or op
+~~ ^^        bitwise xor op
+~~ !         bitwise not op
+
+~~ ==        equal comp
+~~ !=        not equal comp
+~~ <         less than comp
+~~ >         greater than comp
+~~ =>        equal to or greater than comp
+~~ =<        equal to or less than comp
+
+~~ ? :       ternary op
+
+~~ ~~        single line comment
+~~ ~{ }~     multi line comment
+
+~~ i1        1 byte integer
+~~ i2        2 byte integer
+~~ i4        4 byte integer
+~~ i8        8 byte integer
+~~ u1        1 byte integer (unsigned)
+~~ u2        2 byte integer (unsigned)
+~~ u4        4 byte integer (unsigned)
+~~ u8        8 byte integer (unsigned)
+~~ f2        2 byte float
+~~ f4        4 byte float
+~~ f8        8 byte float
+~~ str       string
+~~ chr       symbol
+~~ b1        1 byte bool
+~~ b2        2 byte bool
+~~ b4        4 byte bool
+~~ b8        8 byte bool
+~~ st        state (default type)
+~~ lc        location
+
+~~ core package
+
+~{
+    location: ~/libs/core
+    functions:
+        print -- prints a string to the console
+        len -- returns the amount of states in a folder
+}~
+
+^(|-program :< @>.) @>~
+^(|~state :< @>.) @>.
+
+~~ import print func to . for ease of use
+@>~/libs/core@print ->< @>.
+
+^(|~add := (({
+    add <= $x + $y
+} <: ($x >: i4, $y >: i4)) >: i4)) @>.
+
+^(|~main := { ^(|-mainf) @>.
+    ^(|~foo := (add <: (2,3))) @>./mainf ~~ we dont need to explicit access add because it is a part of current and not a subfolder or somewhere else
+    @>~/libs/core@print <: @>./mainf@foo
+
+    ~~ dynamic array example
+    ^(|-darr) @>./mainf
+    ^(|~e0) @>./mainf/darr
+    ^(|~e1) @>./mainf/darr
+
+    @>./mainf/darr@e0 := 4
+    @>./mainf/darr@e1 := 2
+
+    print <: @>./mainf/darr@e0 + @>./mainf/darr@e1
+
+    ;(&"e0") @>./mainf/darr
+
+    ^(|~e0indarr := @>./mainf@darr@?e0) @>.
+    
+    ^(|~if := (e0indarr == _ ? {
+        print <: ":P"
+    } : {
+        print <: "what??? how!!!!"
+    })) @>.
+
+    ~~ call if function
+    if    
+}) @>.
+
+main
+
+@>. -> @>_
