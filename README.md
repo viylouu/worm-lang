@@ -10,7 +10,7 @@ its goal is to really make you think when writing complex code.
 - neovim syntax highlighting through regex
 ### example
 example is test.worm (after all the comments for how stuff works)
-### in the future (if this still is a thing)
+### roadmap
 - more complete standard library
 - graphics and audio support (through vulkan/opengl)
 - full interpreter written in odin
