@@ -17,8 +17,7 @@
 ~~ !-><      copy folder (does not take subfolders, but it takes states) to location
 ~~ <=        set the return value of left (state) to right (expression)
 ~~ @         reference a state in a location
-~~ @?        try to reference a state in a location, if it succeeds it returns true, otherwise false
-~~ &         returns the value of right as a name (for folder creation / indexing)
+~~ @?        try to reference a state in a location, if it succeeds it returns the state, otherwise it returns null (_)
 ~~ ^         push state to location or state
 ~~ ;         pop state from location or state
 
@@ -55,6 +54,8 @@
 ~~ ~~        single line comment
 ~~ ~{ }~     multi line comment
 
+~~ :>        cast left value to right type
+~~ ::>       copy bit values of left value to a new value of right type
 ~~ i1        1 byte integer
 ~~ i2        2 byte integer
 ~~ i4        4 byte integer
@@ -74,6 +75,7 @@
 ~~ b8        8 byte bool
 ~~ st        state (default type)
 ~~ lc        location
+~~ nm        name (used in @ and |~ / |-)
 
 ~~ core package
 
@@ -113,7 +115,7 @@
     ^(|~e0indarr := @>./mainf@darr@?e0) @>.
     
     ^(|~if := (e0indarr == _ ? {
-        print <: ":P"
+        print <: ":P idk what you expected tbh"
     } : {
         print <: "what??? how!!!!"
     })) @>.
@@ -125,3 +127,19 @@
 main
 
 @>. -> @>_
+
+~~ here's fast inverse sqrt for gits and shiggles
+~{
+
+^(|~fisr := ({
+    ^(|~i := (x ::> i4)) @>.
+    i := 0x5f3759df - (i >> 1)
+    ^(|~y := (i ::> f4)) @>.
+    y := y * (1.5 - (x * 0.5 * y * y))
+    fisr <= y
+
+    y -> @>_
+    i -> @>_
+}) <: (x >: f4)) >: f4) @>.
+
+}~
